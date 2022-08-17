@@ -63,7 +63,10 @@ def get_lyrics(lyrics):
     resp = requests.get("https://www.songlyrics.com/hillsong/oceans-where-feet-may-fail-lyrics/")
     soup = BeautifulSoup(resp.content, "lxml")
     # print(soup)
+    # logger.debug("getting song lyrics")
     lyrics = soup.find("p", attrs={"id": "songLyricsDiv"})
+    
+
     # lyrics_link =  lyrics.find_all('a')
     # print(lyrics.text)
     # for line in lyrics:
@@ -98,12 +101,13 @@ def crawl(download_directory_path):
             # print(song_name)
             formatted_song_name = song_name.replace("/","-")
             if formatted_song_name:
-                logger.debug("song name: %s", formatted_song_name)
+                logger.debug("song name: '%s'", formatted_song_name)
             else :
                 logger.debug("song not found")
-            logger.debug("creating folder with song name :%s",formatted_song_name)
+            logger.debug("creating folder with song name :'%s'",formatted_song_name)
             file = open(f"{artist_dir}/{formatted_song_name}.txt",'w')
             file.write(get_lyrics(song_link))
+            logger.debug("downloading songs lyrics of '%s'",formatted_song_name)
             file.close()
             
         
@@ -114,15 +118,16 @@ def main():
     # artist = get_artists_name()
     # songs = get_songs('https://www.songlyrics.com/hillsong-lyrics/')
     # print(songs)
+    if args.debug:
+        configure_logging(logging.DEBUG)
+    else:
+        configure_logging(logging.INFO)
     lyrics = get_lyrics('https://www.songlyrics.com/hillsong/oceans-where-feet-may-fail-lyrics/')
     # print(lyrics)
 
     # songs = get_songs_name()
     # lyrics = get_lyrics()
-    if args.debug:
-        configure_logging(logging.DEBUG)
-    else:
-        configure_logging(logging.INFO)
+    
     # logger.debug("Here's a debug message")
     # logger.info("Here's an info message!")
     # logger.warning("Here's an warning message!")
