@@ -97,6 +97,11 @@ def crawl(download_directory_path):
         for song_name, song_link in get_songs(artist_link).items():
             # print(song_name)
             formatted_song_name = song_name.replace("/","-")
+            if formatted_song_name:
+                logger.debug("song name: %s", formatted_song_name)
+            else :
+                logger.debug("song not found")
+            # logger.debug("creating folder")
             file = open(f"{artist_dir}/{formatted_song_name}.txt",'w')
             file.write(get_lyrics(song_link))
             file.close()
