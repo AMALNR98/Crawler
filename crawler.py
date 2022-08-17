@@ -101,7 +101,7 @@ def crawl(download_directory_path):
                 logger.debug("song name: %s", formatted_song_name)
             else :
                 logger.debug("song not found")
-            # logger.debug("creating folder")
+            logger.debug("creating folder with song name :%s",formatted_song_name)
             file = open(f"{artist_dir}/{formatted_song_name}.txt",'w')
             file.write(get_lyrics(song_link))
             file.close()
