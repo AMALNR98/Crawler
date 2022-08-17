@@ -40,9 +40,9 @@ def get_artists_name(base):
             # print(link)
             # print("artist name:", link.text)
             # artists.append(link.text)
-            # print(artists)
-
+            # print(artists) 
     # print(artists_name_and_links)
+    logger.debug("artist name and link added to ditinoary")
     return artists_name_and_links
 
 def get_songs(artists_name):
