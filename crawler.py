@@ -3,6 +3,7 @@ import logging
 import os
 
 # from urllib import requests
+
 import requests
 from bs4 import BeautifulSoup
 logger = None

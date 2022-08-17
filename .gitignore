@@ -1,2 +1,9 @@
 # created by virtualenv automatically
-
+bin/
+lib/
+lib64/
+bf4_tutorial.py
+meh.html
+pyvenv.cfg
+venv/
+testcode.py
