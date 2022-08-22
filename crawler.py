@@ -1,28 +1,34 @@
 import argparse
+from ast import arg
 import logging
 import os
 
-# from urllib import requests
-
 import requests
 from bs4 import BeautifulSoup
-logger = None
 
+import db
+
+logger = None
+dbname = "lyrics"
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Web crawler")
-    parser.add_argument(
-        "-d", "--debug", help="Enable debug logging", action="store_true")
+    parser.add_argument("-d", "--debug", help="Enable debug logging", action="store_true")
+    parser.add_argument("--download", help = "creates a directory for lyrics", action ="store")
+    parser.add_argument("--db", help = "Name of the date base", action = "store", default ="lyrics" )
+    subcommands = parser.add_subparsers(help= "commandsa", dest="command", required= True)
+    subcommands.add_parser("initdb", help="Initializing the database")
+    subcommands.add_parser("crawl", help = "Crawling")
+    subcommands. add_parser("web", help = "start browser" )
+    subcommands.add_parser("add_directory", help = "Create a directory to store lyrics")
     return parser.parse_args()
 
 
 def get_artists_name(base):
-    # args = parse_args()
     resp = requests.get("https://www.songlyrics.com/top-artists-lyrics.html")
     soup = BeautifulSoup(resp.content, "lxml")
     track_list = soup.find("table", attrs={"class": "tracklist"})
     track_link = track_list.find_all('h3')
-    # print(track_link)
     if track_link:
         logger.debug("artist list parsed successfully")
     else:
@@ -31,18 +37,7 @@ def get_artists_name(base):
 
     for link in track_link[0:5]:
 
-        # if link.find('img') not in link:
-
-            # artist_name = link.text
-            # print(artist_name)
         artists_name_and_links[link.text] = link.a['href']
-        # logger.info("getting artist name")
-            # artists_name_and_links[link.text]=link
-            # print(link)
-            # print("artist name:", link.text)
-            # artists.append(link.text)
-            # print(artists) 
-    # print(artists_name_and_links)
     logger.debug("artist name and link added to ditinoary")
     return artists_name_and_links
 
@@ -53,25 +48,14 @@ def get_songs(artists_name):
      songs = soup.find("table", attrs= {"class": "tracklist"})
      song_link = songs.find_all('a')
      for songs in song_link[0:5]:
-        #print(songs.text)
         song_list[songs.text]= songs["href"]
-        #  if songs.find('img') not in songs:
-        #     song_list[]
      return song_list
 
 
 def get_lyrics(lyrics):
     resp = requests.get("https://www.songlyrics.com/hillsong/oceans-where-feet-may-fail-lyrics/")
     soup = BeautifulSoup(resp.content, "lxml")
-    # print(soup)
-    # logger.debug("getting song lyrics")
     lyrics = soup.find("p", attrs={"id": "songLyricsDiv"})
-    
-
-    # lyrics_link =  lyrics.find_all('a')
-    # print(lyrics.text)
-    # for line in lyrics:
-    #     print(line)
     return lyrics.text
 
 
@@ -88,18 +72,10 @@ def configure_logging(level=logging.INFO):
 
 
 def crawl(download_directory_path):
-#     #     logger.debug("Crawling starting")
-#     #     for i in range(10):
-#     #         logger.debug("Fetching URL %s", i)
-#     #         print("https://....")
-#     #     logger.debug("Completed crawling")
-#     # x= get_artists_name("http://www.songlyrics.com/top-artists-lyrics.html").items()
-#     # print(x.items())
     for artist_name, artist_link in get_artists_name("http://www.songlyrics.com/top-artists-lyrics.html").items():
         artist_dir = os.path.join(download_directory_path, artist_name)
         os.makedirs(artist_dir, exist_ok=True)
         for song_name, song_link in get_songs(artist_link).items():
-            # print(song_name)
             formatted_song_name = song_name.replace("/","-")
             if formatted_song_name:
                 logger.debug("song name: '%s'", formatted_song_name)
@@ -110,33 +86,45 @@ def crawl(download_directory_path):
             file.write(get_lyrics(song_link))
             logger.debug("downloading songs lyrics of '%s'",formatted_song_name)
             file.close()
-            
-        
+
+def create_table(db_name):
+    conn = db.get_connection(db_name)
+    with conn.cursor() as cursor: 
+        with open("init.sql") as f:
+            sql = f.read()
+            cursor.execute(sql)
+        conn.commit()
+        conn.close()          
+
+def add_artists():
+    for artist_name, artist_link in get_artists_name('http://www.songlyrics.com/top-artists-lyrics.html').items():
+        last_id = db.add_artist(artist_name)
+        for song, song_link in get_songs(artist_link).items():
+            lyrics = get_lyrics(song_link)
+            db.add_song(song,last_id,  lyrics)
+
 
 
 def main():
     args = parse_args()
-    # artist = get_artists_name()
-    # songs = get_songs('https://www.songlyrics.com/hillsong-lyrics/')
-    # print(songs)
     if args.debug:
         configure_logging(logging.DEBUG)
     else:
         configure_logging(logging.INFO)
-    lyrics = get_lyrics('https://www.songlyrics.com/hillsong/oceans-where-feet-may-fail-lyrics/')
-    # print(lyrics)
-
-    # songs = get_songs_name()
-    # lyrics = get_lyrics()
-    
-    # logger.debug("Here's a debug message")
-    # logger.info("Here's an info message!")
-    # logger.warning("Here's an warning message!")
-    # logger.critical("Here's an critical message!")
-    # crawl()
+    if args.command == "initdb":
+        logger.info("Initializing the database")
+        create_table(args.db)
+        logger.info("Database initialized")
+    if args.command == "crawl":
+        logger.info("Crawling")
+        add_artists()
+        logger.info("Crawling completed")
+    if args.command == "add_directory":
+        logger.info("Crawling to directory")
+        crawl("artists")
 if __name__ == "__main__":
     main()
-    crawl("/home/amalnr/Hamon/Crawler")
+    # rawl("/home/amalnr/Hamon/Crawler")
 # artist
 # songs
 # lyrics
