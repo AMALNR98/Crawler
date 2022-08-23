@@ -11,7 +11,7 @@ def add_artist(artist_name):
         id = curs.fetchone()[0]
         conn.commit() 
         conn.close()
-        return id
+    return id
 
 
 def add_song(song_name, artist_id, lyrics):
@@ -20,3 +20,4 @@ def add_song(song_name, artist_id, lyrics):
         curs.execute("insert into songs(name, artist_id, lyrics) values(%s,%s, %s)", (song_name, artist_id, lyrics))
     conn.commit()
     conn.close()
+

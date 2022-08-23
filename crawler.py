@@ -1,12 +1,13 @@
 import argparse
-from ast import arg
 import logging
+from ast import arg
 import os
 
 import requests
 from bs4 import BeautifulSoup
 
 import db
+import web
 
 logger = None
 dbname = "lyrics"
@@ -99,9 +100,9 @@ def create_table(db_name):
 def add_artists():
     for artist_name, artist_link in get_artists_name('http://www.songlyrics.com/top-artists-lyrics.html').items():
         last_id = db.add_artist(artist_name)
-        for song, song_link in get_songs(artist_link).items():
+        for song_name, song_link in get_songs(artist_link).items():
             lyrics = get_lyrics(song_link)
-            db.add_song(song,last_id,  lyrics)
+            db.add_song(song_name, last_id,  lyrics)
 
 
 
@@ -122,9 +123,13 @@ def main():
     if args.command == "add_directory":
         logger.info("Crawling to directory")
         crawl("artists")
+    
+    if args.command == "web":
+        logger.info("web starting")
+        web.app.run(port=5001)    
 if __name__ == "__main__":
     main()
-    # rawl("/home/amalnr/Hamon/Crawler")
+    # crawl("/home/amalnr/Hamon/Crawler")
 # artist
 # songs
 # lyrics
