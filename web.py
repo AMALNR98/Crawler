@@ -32,15 +32,42 @@ def index():
     artists = Artists.query.all()
     formatted =[]
     for i in artists:
-        target = url_for("artist",artist_id=i.id)
+        target = url_for("artist",artist_id=i.id,song_name=i.name)
         link = f"<a href='{target}'>{i.name}</a>"
         formatted.append(f"<li>{link}<li>")
+    print(formatted)
     return "<ul>"+"".join(formatted)+"<ul>"
 
 @app.route("/artist/<int:artist_id>")
+# def artist(artist_id):
+#     return f"<p> I got {artist_id}</p>"
 def artist(artist_id):
-    return f"<p> I got {artist_id}</p>"
+    artist = Artists.query.filter_by(id = artist_id).first()
+    formatted = []
+    for song in artist.songs:
+        target = url_for("song", song_id=song.id,song_name = song.name)
+        link = f'<a href="{target}">{song.name}</a>'
+        formatted.append(f"<li>{link}</li>")
+    songs_list = "".join(formatted)
+    return f"""
+<center><h2>Songs by <em>{artist.name}</em></h2></center>
+<ol>
+{songs_list}
+</ol>
+"""
 
 @app.route("/song/<int:song_id>")
-def song(song_id):
-    return f"<p> I got {song_id}</p>"
+# def song(song_id):
+#     return f"<p> I got {song_id}</p>"
+
+@app.route('/song/<int:song_id><string:song_name>')
+def song(song_id,song_name):
+    lyrics=Songs.query.filter_by(id=song_id)
+    for lyric in lyrics:
+        lyrics = lyric.lyrics.replace("\n","<br>")
+    return f"""
+        <center><h2><em>{song_name}</em><h2></center>
+        <center<h3>{lyrics}</h3>
+        </center>
+        </ol>
+        """

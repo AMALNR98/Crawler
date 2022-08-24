@@ -35,9 +35,7 @@ def get_artists_name(base):
     else:
         logger.debug("couldn't parse artist list")
     artists_name_and_links = {}
-
     for link in track_link[0:5]:
-
         artists_name_and_links[link.text] = link.a['href']
     logger.debug("artist name and link added to ditinoary")
     return artists_name_and_links
@@ -129,7 +127,8 @@ def main():
         web.app.run(port=5001)    
 if __name__ == "__main__":
     main()
-    # crawl("/home/amalnr/Hamon/Crawler")
 # artist
 # songs
 # lyrics
+
+
