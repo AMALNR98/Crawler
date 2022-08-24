@@ -1,5 +1,6 @@
+from gzip import READ
 from multiprocessing.spawn import import_main_path
-from flask import Flask,url_for
+from flask import Flask,url_for,render_template
 from flask_sqlalchemy import SQLAlchemy
 
 app =Flask("lyrics")
@@ -28,46 +29,36 @@ class Songs(db.Model):
 
 @app.route("/")
 def index():
-    # return "<p> Hello, world</p>"
-    artists = Artists.query.all()
-    formatted =[]
-    for i in artists:
-        target = url_for("artist",artist_id=i.id,song_name=i.name)
-        link = f"<a href='{target}'>{i.name}</a>"
-        formatted.append(f"<li>{link}<li>")
-    print(formatted)
-    return "<ul>"+"".join(formatted)+"<ul>"
+    artist = Artists.query.all()
+    nartist = len(artist)
+    # formatted = []
+    # for artist in artists:
+    #     target = url_for("artist", artist_id = artist.id)
+    #     link = f'<a href = "{target}">{artist.name}</a>'
+    #     formatted.append(f"<li>{link}</li>")
+    #     artists = "".join(formatted)
+    #     print(artists)
+    return render_template('index.html',artists=artist, no_artists = nartist)
 
 @app.route("/artist/<int:artist_id>")
 # def artist(artist_id):
 #     return f"<p> I got {artist_id}</p>"
 def artist(artist_id):
-    artist = Artists.query.filter_by(id = artist_id).first()
-    formatted = []
-    for song in artist.songs:
-        target = url_for("song", song_id=song.id,song_name = song.name)
-        link = f'<a href="{target}">{song.name}</a>'
-        formatted.append(f"<li>{link}</li>")
-    songs_list = "".join(formatted)
-    return f"""
-<center><h2>Songs by <em>{artist.name}</em></h2></center>
-<ol>
-{songs_list}
-</ol>
-"""
+    songs_ = Songs.query.filter_by(artist_id = artist_id).all()
+    nsongs=len(songs_)
+    # artist = Artists.query.get(artist_id)
 
+    # formatted = []
+    # for i in songs:
+    #     target = url_for("song", song_id = i.id)
+    #     link = f'<a href = "{target}">{i.name}</a>'
+    #     formatted.append(f"<li>{link}</li>")
+    #     songs = "".join(formatted)
+    # return "<ul>" + "".join(formatted) + "</ul>"
+    return render_template('song.html',songs= songs_,no_songs=nsongs)
 @app.route("/song/<int:song_id>")
-# def song(song_id):
-#     return f"<p> I got {song_id}</p>"
+def song(song_id):
+    song = Songs.query.filter_by(id = song_id).first()
 
-@app.route('/song/<int:song_id><string:song_name>')
-def song(song_id,song_name):
-    lyrics=Songs.query.filter_by(id=song_id)
-    for lyric in lyrics:
-        lyrics = lyric.lyrics.replace("\n","<br>")
-    return f"""
-        <center><h2><em>{song_name}</em><h2></center>
-        <center<h3>{lyrics}</h3>
-        </center>
-        </ol>
-        """
+    lyrics = song.lyrics.replace("\n","<br>")
+    return render_template('lyrics.html', song_name =song.name, lyrics=lyrics)

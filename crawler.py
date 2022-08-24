@@ -2,6 +2,8 @@ import argparse
 import logging
 from ast import arg
 import os
+from pickle import TRUE
+from smtpd import DebuggingServer
 
 import requests
 from bs4 import BeautifulSoup
@@ -35,7 +37,7 @@ def get_artists_name(base):
     else:
         logger.debug("couldn't parse artist list")
     artists_name_and_links = {}
-    for link in track_link[0:5]:
+    for link in track_link[0:10]:
         artists_name_and_links[link.text] = link.a['href']
     logger.debug("artist name and link added to ditinoary")
     return artists_name_and_links
@@ -46,7 +48,7 @@ def get_songs(artists_name):
      soup = BeautifulSoup(resp.content,'lxml')
      songs = soup.find("table", attrs= {"class": "tracklist"})
      song_link = songs.find_all('a')
-     for songs in song_link[0:5]:
+     for songs in song_link[0:10]:
         song_list[songs.text]= songs["href"]
      return song_list
 
@@ -124,7 +126,7 @@ def main():
     
     if args.command == "web":
         logger.info("web starting")
-        web.app.run(port=5001)    
+        web.app.run(port=5001,debug = TRUE)    
 if __name__ == "__main__":
     main()
 # artist
