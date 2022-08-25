@@ -1,6 +1,10 @@
 {%extends "base.html"%}
+{%block column1%}
+<p>{{artist_name}}</p>
+{%endblock%}
+
 {% block content %}
-<p>We have {{no_songs }} songs on our system right now. They are listed below</p>
+<p>We have {{no_songs}} songs on our system right now. They are listed below</p>
 <p>
     <ol>
         {% for song in songs %}

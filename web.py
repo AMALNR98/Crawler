@@ -45,7 +45,9 @@ def index():
 #     return f"<p> I got {artist_id}</p>"
 def artist(artist_id):
     songs_ = Songs.query.filter_by(artist_id = artist_id).all()
+    artist=songs_[0]
     nsongs=len(songs_)
+
     # artist = Artists.query.get(artist_id)
 
     # formatted = []
@@ -55,10 +57,10 @@ def artist(artist_id):
     #     formatted.append(f"<li>{link}</li>")
     #     songs = "".join(formatted)
     # return "<ul>" + "".join(formatted) + "</ul>"
-    return render_template('song.html',songs= songs_,no_songs=nsongs)
+    return render_template('song.html',songs= songs_,no_songs=nsongs,artist_name=artist.name)
 @app.route("/song/<int:song_id>")
 def song(song_id):
     song = Songs.query.filter_by(id = song_id).first()
 
     lyrics = song.lyrics.replace("\n","<br>")
-    return render_template('lyrics.html', song_name =song.name, lyrics=lyrics)
+    return render_template('lyrics.html', song_name =song.name, lyrics=lyrics,songs_list=song.artist.songs)

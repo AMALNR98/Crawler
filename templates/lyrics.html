@@ -1,10 +1,16 @@
-{% extends "base.html"%}
+{% extends "base.html"  %}
+{%block column1%}
+        {% for song in songs %}
+        <li > <a href="{{url_for('song' ,song_id=song.id)}}">{{song.name}}</a></li>
+        {% endfor %}
+{%end block%}
+
 {%block content%}
     
-    <center><h2 class="lyrics_heading">{{song_name}}</h2></center>
+    <h2 class="lyrics_heading">{{song_name}}</h2>
     <div>
         {% autoescape off %}
-        <em><center class="lyrics">{{lyrics}}</center></em>
+        <em class="lyrics">{{lyrics}}</em>
         {% endautoescape %}
     </div>
     {% endblock%}
