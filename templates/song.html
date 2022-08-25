@@ -4,7 +4,7 @@
 <p>
     <ol>
         {% for song in songs %}
-        <li> <a href="{{url_for('song' ,song_id=song.id)}}">{{song.name}}</a></li>
+        <li > <a href="{{url_for('song' ,song_id=song.id)}}">{{song.name}}</a></li>
         {% endfor %}
     </ol>
 </p>

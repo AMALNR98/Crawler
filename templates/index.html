@@ -4,7 +4,7 @@
 <p>
     <ol>
         {% for artist in artists %}
-        <li> <a href="{{url_for('artist' ,artist_id=artist.id)}}">{{artist.name}}</a></li>
+        <li class="list1"> <a href="{{url_for('artist' ,artist_id=artist.id)}}">{{artist.name}}</a></li>
         {% endfor %}
     </ol>
 </p>
