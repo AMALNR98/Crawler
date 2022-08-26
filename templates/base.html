@@ -21,6 +21,14 @@
     h2.lyrics_heading{
         color: darkkhaki;
     }
+    h2.helloblock{
+        color: rgb(214, 156, 8);
+        background-color: rgb(2, 30, 83);
+    }
+    p.message1{
+        background-color: rgb(120, 119, 117);
+
+    }
     a{
         text-decoration: none;
 
@@ -28,6 +36,7 @@
     ol{
         margin-block: inherit;
         display: inline-table;
+        border: outset rgb(255, 127, 80);
     }
     div{
         background-color: rgb(243, 238, 238);
@@ -61,7 +70,7 @@
         <h1 class heading1>Lyrics database</h1>
         <div class="container text-center">
             <div class="row">
-              <div class="col-2">
+              <div class="col-3">
                 {% block column1 %}
 
                 {% endblock %}
@@ -75,6 +84,11 @@
             </div>
           </div>
         
+          <div class="row">
+            <div class="col">
+        <hr/>
+        <p>copyright by songs lyrics </p>
+        </div>
     </body>
 </body>
 

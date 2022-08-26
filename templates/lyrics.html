@@ -1,9 +1,11 @@
 {% extends "base.html"  %}
 {%block column1%}
-        {% for song in songs %}
+        {% for song in songs_list %}
+    
         <li > <a href="{{url_for('song' ,song_id=song.id)}}">{{song.name}}</a></li>
+    
         {% endfor %}
-{%end block%}
+{%endblock%}
 
 {%block content%}
     
