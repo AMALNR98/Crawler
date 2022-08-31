@@ -1,10 +1,13 @@
 from gzip import READ
 from multiprocessing.spawn import import_main_path
-from flask import Flask,url_for,render_template
+from flask import Flask,url_for,render_template,jsonify,request
+from flask_accept import accept
 from flask_sqlalchemy import SQLAlchemy
+import time
 
 app =Flask("lyrics")
 app.config['SQLALCHEMY_DATABASE_URI']='postgresql:///lyrics'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db=SQLAlchemy(app)
 
 class Artists(db.Model):
@@ -57,10 +60,32 @@ def artist(artist_id):
     #     formatted.append(f"<li>{link}</li>")
     #     songs = "".join(formatted)
     # return "<ul>" + "".join(formatted) + "</ul>"
-    return render_template('song.html',songs= songs_,no_songs=nsongs,artist_name=artist.name)
+    return render_template('songs.html',songs= songs_,no_songs=nsongs,artist_name=artist.name)
 @app.route("/song/<int:song_id>")
+@accept("text/html")
 def song(song_id):
     song = Songs.query.filter_by(id = song_id).first()
-
-    lyrics = song.lyrics.replace("\n","<br>")
+    lyrics = song.lyrics#.replace("\n","<br>")
     return render_template('lyrics.html', song_name =song.name, lyrics=lyrics,songs_list=song.artist.songs)
+@app.route("/lyrics/<int:song_id>") 
+
+# def lyrics(song_id):
+#     song = Songs.query.filter_by(id = song_id).first()
+#     songs = song.artist.songs
+#     time.sleep(1)
+#     return render_template("lyrics.html", 
+#                            song = song)
+
+@song.support("application/json")
+def song_json(song_id):
+    print ("I'm returning json!")
+    print(song_id)
+    song = Songs.query.filter_by(id = song_id).first()
+    # print(song.lyrics[0:10])
+    songs = song.artist.songs
+    ret = dict(song = dict(name = song.name,
+                           lyrics = song.lyrics,
+                           id = song.id,
+                           artist = dict(name = song.artist.name,
+                                         id = song.artist.id)))
+    return jsonify(ret)
